@@ -33,7 +33,8 @@ FloatLayout:
     # as soon as the image is loaded, ensure that the center is changed
     # to the center of the screen.
     on_size: self.center = win.Window.center
-    size: image.size
+    # size: image.size
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
     size_hint: None, None
 
     Image:
@@ -41,7 +42,8 @@ FloatLayout:
         source: root.source
 
         # create initial image to be 400 pixels width
-        size: 2048, 2048 # / self.image_ratio
+        # size: 2048, 2048 # / self.image_ratio
+        pos: root.center
 
         # add shadow background
         canvas.before:

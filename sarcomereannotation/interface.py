@@ -31,6 +31,7 @@ from random import randint
 from os.path import join, dirname
 from kivy.app import App
 from kivy.logger import Logger
+from kivy.uix.widget import Widget
 from kivy.uix.scatter import Scatter
 from kivy.properties import StringProperty
 from kivy.uix.floatlayout import FloatLayout
@@ -40,7 +41,7 @@ from kivy.uix.popup import Popup
 
 import os
 
-class Picture(Scatter):
+class Picture(Widget):  # Scatter):
     '''Picture is the class that will show the image with a white border and a
     shadow. They are nothing here because almost everything is inside the
     picture.kv. Check the rule named <Picture> inside the file, and you'll see
@@ -84,9 +85,26 @@ class LoadDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 class Root(FloatLayout):
+    picture = None
     loadfile = ObjectProperty(None)
     savefile = ObjectProperty(None)
     clearline = ObjectProperty(None)
+
+    def add_picture(self, path):
+        filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
+        try:
+            # load the image
+            tcenter = self.center
+            lpicture = Picture(source=filename, pos=self.center)  # rotation=randint(-30, 30))
+            # add to the main field
+            self.add_widget(lpicture)
+
+        except Exception as e:
+            Logger.exception('Pictures: Unable to load <%s>' % filename)
+        self.picture = lpicture
+
+    def on_pause(self):
+        return True
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -98,36 +116,38 @@ class Root(FloatLayout):
         self._popup.open()
 
     def load(self, path, filename):
-        with open(os.path.join(path, filename[0])) as stream:
-            self.text_input.text = stream.read()
-        self.canvas.clear()
+        self.add_picture(os.path.join(path, filename[0]))
+        #self.canvas.clear()
         self.dismiss_popup()
 
     def clear_line(self):
-        self.canvas.clear()
+        if self.picture is None: return
+        self.remove_widget(self.picture)
+        self.picture = None
+
 
 class Editor(App):
-
-    def build(self):
-
-        # the root is created in pictures.kv
-        root = self.root
-
-        # get any files into images directory
-        # curdir = dirname(__file__)
-        # for filename in glob(join(curdir, 'images', '*')):
-
-        filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
-        try:
-            # load the image
-            picture = Picture(source=filename)  # rotation=randint(-30, 30))
-            # add to the main field
-            root.add_widget(picture)
-        except Exception as e:
-            Logger.exception('Pictures: Unable to load <%s>' % filename)
-
-    def on_pause(self):
-        return True
+    pass
+    # def build(self):
+    #
+    #     # the root is created in pictures.kv
+    #     root = self.root
+    #
+    #     # get any files into images directory
+    #     # curdir = dirname(__file__)
+    #     # for filename in glob(join(curdir, 'images', '*')):
+    #
+    #     filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
+    #     try:
+    #         # load the image
+    #         picture = Picture(source=filename)  # rotation=randint(-30, 30))
+    #         # add to the main field
+    #         root.add_widget(picture)
+    #     except Exception as e:
+    #         Logger.exception('Pictures: Unable to load <%s>' % filename)
+    #
+    # def on_pause(self):
+    #     return True
 
 
 Factory.register('Root', cls=Root)
