@@ -36,12 +36,12 @@ from kivy.uix.scatter import Scatter
 from kivy.properties import StringProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, NumericProperty
 from kivy.uix.popup import Popup
 
 import os
 
-class Picture(Widget):  # Scatter):
+class Picture(Scatter):
     '''Picture is the class that will show the image with a white border and a
     shadow. They are nothing here because almost everything is inside the
     picture.kv. Check the rule named <Picture> inside the file, and you'll see
@@ -49,40 +49,44 @@ class Picture(Widget):  # Scatter):
 
     The source property will be the filename to show.
     '''
-
+    do_rotation = False
+    do_scale = True
     source = StringProperty(None)
 
 
-class PicturesApp(App):
-
-    def build_config(self, config):
-        pass
-
-    def build(self):
-
-        # the root is created in pictures.kv
-        root = self.root
-
-        # get any files into images directory
-        # curdir = dirname(__file__)
-        # for filename in glob(join(curdir, 'images', '*')):
-
-        filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
-        try:
-            # load the image
-            picture = Picture(source=filename)  # rotation=randint(-30, 30))
-            # add to the main field
-            root.add_widget(picture)
-        except Exception as e:
-            Logger.exception('Pictures: Unable to load <%s>' % filename)
-
-    def on_pause(self):
-        return True
+# class PicturesApp(App):
+#
+#     def build_config(self, config):
+#         pass
+#
+#     def build(self):
+#
+#         # the root is created in pictures.kv
+#         root = self.root
+#
+#         # get any files into images directory
+#         # curdir = dirname(__file__)
+#         # for filename in glob(join(curdir, 'images', '*')):
+#
+#         filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
+#         try:
+#             # load the image
+#             picture = Picture(source=filename)  # rotation=randint(-30, 30))
+#             # add to the main field
+#             root.add_widget(picture)
+#         except Exception as e:
+#             Logger.exception('Pictures: Unable to load <%s>' % filename)
+#
+#     def on_pause(self):
+#         return True
 
 
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
+
+# FloatLayout):
+
 
 class Root(FloatLayout):
     picture = None
@@ -94,13 +98,15 @@ class Root(FloatLayout):
         filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
         try:
             # load the image
-            tcenter = self.center
-            lpicture = Picture(source=filename, pos=self.center)  # rotation=randint(-30, 30))
+            lpicture = Picture(source=filename,
+                               pos_hint={'top': 0.98, 'right': 0.98},
+                               )  # rotation=randint(-30, 30))
             # add to the main field
             self.add_widget(lpicture)
 
         except Exception as e:
             Logger.exception('Pictures: Unable to load <%s>' % filename)
+            exit(-1)
         self.picture = lpicture
 
     def on_pause(self):
