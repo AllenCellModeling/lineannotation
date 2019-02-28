@@ -105,7 +105,7 @@ class Picture(Image):
 
     def __init__(self, **kwargs):
         super(Picture, self).__init__(**kwargs)
-        self.txt_name = kwargs["source"] + ".txt"
+        self.txt_name = kwargs["source"] + ".annot_txt"
         self.keep_points = SarcomereLines()
 
     def on_touch_down(self, touch):

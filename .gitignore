@@ -125,3 +125,7 @@ ENV/
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+
+# OSX dot files
+._*
+*.annot_txt
