@@ -26,23 +26,18 @@ domain.
 import kivy
 kivy.require('1.0.6')
 
-from glob import glob
-from random import randint
-from os.path import join, dirname
 from kivy.app import App
 from kivy.logger import Logger
-from kivy.uix.widget import Widget
-from kivy.uix.scatter import Scatter
 from kivy.uix.image import Image
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.slider import Slider
-from kivy.uix.recycleview import RecycleView
 from kivy.properties import StringProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty, NumericProperty
+from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
+from kivy.graphics import Color, Ellipse, Line, InstructionGroup
 import json
 import os
 
@@ -51,6 +46,8 @@ class SarcomereLines(object):
     def __init__(self):
         self.lines = []
         self.add_line()
+        self.d = 2
+        self.instructions = None
 
     def add_line(self):
         self.lines.append([])
@@ -62,11 +59,36 @@ class SarcomereLines(object):
     def remove_point(self):
         self.lines[-1].pop()
 
-    def write_file(self, fname):
+    def remove_line(self, canvas):
+        if self.instructions:
+            canvas.remove(self.instructions)
+        self.instructions = None
+        self.lines.pop()
+        self.add_line()
+
+    def write_file(self, fname, img_size):
         with open(fname, "w") as fp:
+            json.dump(img_size, fp)
             json.dump(self.lines, fp)
         fp.closed
 
+    def draw_points(self, canvas):
+        if self.instructions:
+            canvas.remove(self.instructions)
+        self.instructions = InstructionGroup()
+        for line in self.lines:
+            if len(line) > 1:
+                self.instructions.add(Color(0, 1, 0))
+                self.instructions.add(
+                    Line(points=[c for p in line for c in p], width=1, dash_length=10, dash_offset=5)
+                )
+            self.instructions.add(Color(1, 0, 0))
+            for p in line:
+                self.instructions.add(
+                    Ellipse(pos=(p[0] - self.d / 2, p[1] - self.d / 2),
+                        size=(self.d, self.d))
+                )
+        canvas.add(self.instructions)
 
 
 class Picture(Image):
@@ -88,40 +110,19 @@ class Picture(Image):
 
     def on_touch_down(self, touch):
         self.keep_points.add_point(touch)
-        self.keep_points.write_file(self.txt_name)
+        self.keep_points.write_file(self.txt_name, self.size)
+        self.keep_points.draw_points(self.canvas)
 
-# class PicturesApp(App):
-#
-#     def build_config(self, config):
-#         pass
-#
-#     def build(self):
-#
-#         # the root is created in pictures.kv
-#         root = self.root
-#
-#         # get any files into images directory
-#         # curdir = dirname(__file__)
-#         # for filename in glob(join(curdir, 'images', '*')):
-#
-#         filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
-#         try:
-#             # load the image
-#             picture = Picture(source=filename)  # rotation=randint(-30, 30))
-#             # add to the main field
-#             root.add_widget(picture)
-#         except Exception as e:
-#             Logger.exception('Pictures: Unable to load <%s>' % filename)
-#
-#     def on_pause(self):
-#         return True
+    def clear_line(self):
+        self.keep_points.remove_line(self.canvas)
+
+    def end_line(self):
+        self.keep_points.add_line()
 
 
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
-
-# FloatLayout):
 
 
 class Root(FloatLayout):
@@ -142,11 +143,11 @@ class Root(FloatLayout):
             # add to the main field
             sv.add_widget(lpicture)
             self.add_widget(sv)      # lpicture)
+            self.picture = lpicture
 
         except Exception as e:
             Logger.exception('Pictures: Unable to load <%s>' % filename)
-            exit(-1)
-        self.picture = sv
+            self.picture = None
 
     def on_pause(self):
         return True
@@ -162,42 +163,22 @@ class Root(FloatLayout):
 
     def load(self, path, filename):
         self.add_picture(os.path.join(path, filename[0]))
-        #self.canvas.clear()
         self.dismiss_popup()
+
+    def end_line(self):
+        if self.picture is None: return
+        self.picture.end_line()
 
     def clear_line(self):
         if self.picture is None: return
-        self.remove_widget(self.picture)
-        self.picture = None
+        self.picture.clear_line()
 
 
 class Editor(App):
     pass
-    # def build(self):
-    #
-    #     # the root is created in pictures.kv
-    #     root = self.root
-    #
-    #     # get any files into images directory
-    #     # curdir = dirname(__file__)
-    #     # for filename in glob(join(curdir, 'images', '*')):
-    #
-    #     filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
-    #     try:
-    #         # load the image
-    #         picture = Picture(source=filename)  # rotation=randint(-30, 30))
-    #         # add to the main field
-    #         root.add_widget(picture)
-    #     except Exception as e:
-    #         Logger.exception('Pictures: Unable to load <%s>' % filename)
-    #
-    # def on_pause(self):
-    #     return True
-
 
 Factory.register('Root', cls=Root)
 Factory.register('LoadDialog', cls=LoadDialog)
 
 if __name__ == '__main__':
     Editor().run()
-    #PicturesApp().run()
