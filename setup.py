@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = []
+requirements = ['kivy']
 
 setup_requirements = ['pytest-runner', ]
 
@@ -28,10 +28,11 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    description="A tool for annotating myofibrile bundles to then use the path and background image to get the distribution of Sarcomere Lengths",
+    description="A tool for annotating myofibrile bundles to then use the path and background image to get the "
+                "distribution of Sarcomere Lengths",
     entry_points={
         'console_scripts': [
-            'my_example=sarcomereannotation.bin.my_example:main'
+            'line_annot=sarcomereannotation.bin.line_annot:main'
         ],
     },
     install_requires=requirements,
