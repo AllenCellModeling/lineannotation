@@ -2,24 +2,10 @@
 Basic Picture Viewer
 ====================
 
-This simple image browser demonstrates the scatter widget. You should
-see three framed photographs on a background. You can click and drag
-the photos around, or multi-touch to drop a red dot to scale and rotate the
-photos.
-
-The photos are loaded from the local images directory, while the background
-picture is from the data shipped with kivy in kivy/data/images/background.jpg.
-The file pictures.kv describes the interface and the file shadow32.png is
-the border to make the images look like framed photographs. Finally,
-the file android.txt is used to package the application for use with the
-Kivy Launcher Android application.
-
-For Android devices, you can copy/paste this directory into
-/sdcard/kivy/pictures on your Android device.
-
-The images in the image directory are from the Internet Archive,
-`https://archive.org/details/PublicDomainImages`, and are in the public
-domain.
+This simple image annotator uses an Image widget inside a ScrollView.
+You can click adding new points that join to form lines (annotations).
+Scrolling moves the image around the visible window. Annotations are in
+the context of the native image coordinates (0,0) is lower left corner.
 
 '''
 
@@ -169,6 +155,8 @@ class Picture(Image):
     how the Picture() is really constructed and used.
 
     The source property will be the filename to show.
+
+    The canvas is the object that takes drawing instructions, it's inherited from Image.
     """
     do_rotation = False
     do_scale = True
@@ -242,17 +230,18 @@ class Root(FloatLayout):
     def __init__(self, **kwargs):
         super(Root, self).__init__(**kwargs)
         Window.bind(on_keyboard=self._on_keyboard_handler)  # this binds the keyboard input to the member function
+        self.__popup = None
 
     def add_picture(self, path):
         filename = path
         try:
             # load the image
-            sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})  #  ScrollView(size=(1024, 1024))
-            lpicture = Picture(source=filename)
+            sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})
+            l_picture = Picture(source=filename)
             # add to the main field
-            sv.add_widget(lpicture)  # add the picture to the scrollview
+            sv.add_widget(l_picture)  # add the picture to the scrollview
             self.add_widget(sv)      # add the scrollview to the Root Canvas
-            self.picture = lpicture  # hold on to picture object to pass messages
+            self.picture = l_picture  # hold on to picture object to pass messages
 
         except Exception as e:
             Logger.exception('Pictures: Unable to load <%s>' % filename)
