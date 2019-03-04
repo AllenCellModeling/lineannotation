@@ -40,39 +40,72 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Line, InstructionGroup
 import json
 import os
+import math
 
 
 class SarcomereLines(object):
-    def __init__(self):
-        self.lines = []
-        self.add_line()
-        self.d = 2
-        self.instructions = None
+    def __init__(self, fname):
+        try:
+            with open(fname, 'r') as fp:
+                fp.readline()  # Discard the image size for now
+                self.lines = json.load(fp=fp)
+            fp.closed
+        except FileNotFoundError:
+            self.lines = [[]]
 
-    def add_line(self):
-        self.lines.append([])
+        self.d = 5
+        self.lw = 3
+        self.instructions = None
+        self.highlight = None
+
+    def end_line(self):
+        if len(self.lines[-1]) > 0:
+            self.lines.append([])
 
     def add_point(self, point):
         self.lines[-1].append(point.pos)
         print(str(point.pos))
 
-    def remove_point(self):
-        self.lines[-1].pop()
-
-    def remove_line(self, canvas):
-        if self.instructions:
-            canvas.remove(self.instructions)
-        self.instructions = None
-        self.lines.pop()
-        self.add_line()
+    def undo_last(self):
+        if len(self.lines[-1]) == 0 and len(self.lines) > 1:
+            self.lines.pop()  # undo the end of list
+        else:
+            if len(self.lines[-1]) > 0:
+                self.lines[-1].pop()
 
     def write_file(self, fname, img_size):
         with open(fname, "w") as fp:
             json.dump(img_size, fp)
+            fp.write("\n")
             json.dump(self.lines, fp)
         fp.closed
 
-    def draw_points(self, canvas):
+    def remove_nearest(self, point, canvas):
+        if len(self.lines) == 1 and len(self.lines[0]) == 0: return
+        i, r_line = self.select_nearest_line(point)
+        self.lines.remove(r_line)
+        canvas.remove(self.highlight)
+        self.highlight = None
+
+    def highlight_nearest(self, point, canvas):
+        if len(self.lines) == 1 and len(self.lines[0]) == 0:
+            return
+        i, r_line = self.select_nearest_line(point)
+        self.draw_highlight(r_line, canvas)
+
+    def draw_highlight(self, line, canvas):
+        if self.highlight:
+            canvas.remove(self.highlight)
+        self.highlight = InstructionGroup()
+        self.highlight.add(Color(1, 1, 0))
+        self.highlight.add(
+            Line(points=[c for p in line for c in p],
+                 width = self.lw, dash_length=10,
+                 dash_offset=5)
+        )
+        canvas.add(self.highlight)
+
+    def draw(self, canvas):
         if self.instructions:
             canvas.remove(self.instructions)
         self.instructions = InstructionGroup()
@@ -80,7 +113,9 @@ class SarcomereLines(object):
             if len(line) > 1:
                 self.instructions.add(Color(0, 1, 0))
                 self.instructions.add(
-                    Line(points=[c for p in line for c in p], width=1, dash_length=10, dash_offset=5)
+                    Line(points=[c for p in line for c in p],
+                         width=self.lw, dash_length=10,
+                         dash_offset=5)
                 )
             self.instructions.add(Color(1, 0, 0))
             for p in line:
@@ -89,6 +124,22 @@ class SarcomereLines(object):
                         size=(self.d, self.d))
                 )
         canvas.add(self.instructions)
+
+    def select_nearest_line(self, p):
+        line_idx = 0
+        p_dist = 100000.0
+        for idx, line in enumerate(self.lines):
+            for pxy in line:
+                d = self.dist(p, pxy)
+                if d < p_dist:
+                    line_idx = idx
+                    p_dist = d
+        return line_idx, self.lines[line_idx]
+
+    def dist(self, p1, p2):
+        dx = float(p1[0]) - float(p2[0])
+        dy = float(p1[1]) - float(p2[1])
+        return math.sqrt(dx*dx + dy*dy)
 
 
 class Picture(Image):
@@ -106,23 +157,50 @@ class Picture(Image):
     def __init__(self, **kwargs):
         super(Picture, self).__init__(**kwargs)
         self.txt_name = kwargs["source"] + ".annot_txt"
-        self.keep_points = SarcomereLines()
+        self.keep_points = SarcomereLines(self.txt_name)
+        self.draw()
+        self._modify = False  # this toggles the edit state
+        self.magic_point = None
+
+    def draw(self):
+        self.keep_points.draw(self.canvas)
 
     def on_touch_down(self, touch):
-        self.keep_points.add_point(touch)
-        self.keep_points.write_file(self.txt_name, self.size)
-        self.keep_points.draw_points(self.canvas)
+        print("p:in on_touch_down")
+        if self._modify:
+            self.magic_point = touch.pos
+            self.keep_points.highlight_nearest(self.magic_point, self.canvas)
+        else:
+            self.keep_points.add_point(touch)
+            self.keep_points.write_file(self.txt_name, self.size)
+            self.draw()
 
     def clear_line(self):
-        self.keep_points.remove_line(self.canvas)
+        print("p:clear_line")
+        self.keep_points.undo_last()
+        self.draw()
 
     def end_line(self):
-        self.keep_points.add_line()
+        print("p:end_line")
+        self.keep_points.end_line()
+
+    def toggle_modify(self):
+        print("p:toggle_modify")
+        self._modify = not self._modify
+
+    def set_remove(self):
+        print("p:set_remove")
+        if self._modify:
+            self.keep_points.remove_nearest(self.magic_point, self.canvas)
+            self.keep_points.draw(self.canvas)
+            self.toggle_modify()
+        self.draw()
 
 
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
+
 
 
 class Root(FloatLayout):
@@ -131,6 +209,10 @@ class Root(FloatLayout):
     savefile = ObjectProperty(None)
     clearline = ObjectProperty(None)
     Window.size = (1024, 1074)
+
+    def __init__(self, **kwargs):
+        super(Root, self).__init__(**kwargs)
+        Window.bind(on_keyboard=self._on_keyboard_handler)
 
     def add_picture(self, path):
         filename = path
@@ -166,12 +248,37 @@ class Root(FloatLayout):
         self.dismiss_popup()
 
     def end_line(self):
+        print("r:in end_line")
         if self.picture is None: return
         self.picture.end_line()
 
     def clear_line(self):
+        print("r:in clear_line")
         if self.picture is None: return
         self.picture.clear_line()
+
+    def toggle_modify(self):
+        print("r:in toggle_modify")
+        if self.picture is None: return
+        self.picture.toggle_modify()
+
+    def set_remove(self):
+        print("r:in set_remove")
+        self.picture.set_remove()
+
+    def _on_keyboard_handler(self, key, scancode, codepoint, modifier, *args):
+        print("modifier=", modifier)
+        ktofunc = {
+            'e': self.end_line,
+            'z': self.clear_line,
+            'm': self.toggle_modify,
+            'r': self.set_remove,
+            '=': lambda: print('zoom in'),
+            '-': lambda: print('zoom out')
+        }
+        func = ktofunc.get(modifier, None)
+        if func:
+            func()
 
 
 class Editor(App):
