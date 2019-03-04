@@ -23,28 +23,39 @@ domain.
 
 '''
 
+import json
 import kivy
 kivy.require('1.0.6')
 
 from kivy.app import App
+from kivy.core.window import Window
+from kivy.factory import Factory
+from kivy.graphics import Color, Ellipse, InstructionGroup, Line
 from kivy.logger import Logger
+from kivy.properties import ObjectProperty, StringProperty
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
+from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.slider import Slider
-from kivy.properties import StringProperty
-from kivy.uix.floatlayout import FloatLayout
-from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
-from kivy.core.window import Window
-from kivy.graphics import Color, Ellipse, Line, InstructionGroup
-import json
+
 import os
 import math
 
 
 class SarcomereLines(object):
+    """SarcomereLines
+
+    This class is a queue. It holds on to the list of points that have been clicked.
+    It also constructs the drawn lines that get added to the Picture Canvas and handles
+    the logic of when to clear the lines from the canvas etc.
+
+    """
     def __init__(self, fname):
+        """
+        Initialize SarcomereLines with a file name
+        :param fname: name of file with lines, if file doesn't exist it is created.
+        """
         try:
             with open(fname, 'r') as fp:
                 fp.readline()  # Discard the image size for now
@@ -55,14 +66,22 @@ class SarcomereLines(object):
 
         self.d = 5
         self.lw = 3
-        self.instructions = None
-        self.highlight = None
+        self.instructions = None  # container to hold the lines drawing object
+        self.highlight = None     # container to hold the highlight lines object
 
     def end_line(self):
+        """
+        end the current line.
+        """
         if len(self.lines[-1]) > 0:
             self.lines.append([])
 
     def add_point(self, point):
+        """
+        add point.pos to the end of the last line in the end of the list.
+        :param point: this is a kivy point object, pos contains the
+        global coordinates in the image frame
+        """
         self.lines[-1].append(point.pos)
         print(str(point.pos))
 
@@ -143,13 +162,14 @@ class SarcomereLines(object):
 
 
 class Picture(Image):
-    '''Picture is the class that will show the image with a white border and a
+    """
+    Picture is the class that will show the image with a white border and a
     shadow. They are nothing here because almost everything is inside the
     picture.kv. Check the rule named <Picture> inside the file, and you'll see
     how the Picture() is really constructed and used.
 
     The source property will be the filename to show.
-    '''
+    """
     do_rotation = False
     do_scale = True
     source = StringProperty(None)
@@ -166,6 +186,11 @@ class Picture(Image):
         self.keep_points.draw(self.canvas)
 
     def on_touch_down(self, touch):
+        """
+        This is a kivy hook. By defining this function on the Picture the picture
+        responds to mouse clicks
+        :param touch: this is the mouse down point, touch.pos are the image coordinates.
+        """
         print("p:in on_touch_down")
         if self._modify:
             self.magic_point = touch.pos
@@ -202,8 +227,12 @@ class LoadDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 
-
 class Root(FloatLayout):
+    """
+    Root is the object that get's created in the application window.
+    It's the master object from which others get created.
+    This object is tied to the editor.kv as well where view parameters get set.
+    """
     picture = None
     loadfile = ObjectProperty(None)
     savefile = ObjectProperty(None)
@@ -212,20 +241,18 @@ class Root(FloatLayout):
 
     def __init__(self, **kwargs):
         super(Root, self).__init__(**kwargs)
-        Window.bind(on_keyboard=self._on_keyboard_handler)
+        Window.bind(on_keyboard=self._on_keyboard_handler)  # this binds the keyboard input to the member function
 
     def add_picture(self, path):
         filename = path
-        #filename = 'resources/Capture 3 - Position 6_XY1543355356_Z0_T000_C0.png'
         try:
             # load the image
             sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})  #  ScrollView(size=(1024, 1024))
-            lpicture = Picture(source=filename, # pos_hint={'top': 0.98, 'right': 0.98},
-                               )  # rotation=randint(-30, 30))
+            lpicture = Picture(source=filename)
             # add to the main field
-            sv.add_widget(lpicture)
-            self.add_widget(sv)      # lpicture)
-            self.picture = lpicture
+            sv.add_widget(lpicture)  # add the picture to the scrollview
+            self.add_widget(sv)      # add the scrollview to the Root Canvas
+            self.picture = lpicture  # hold on to picture object to pass messages
 
         except Exception as e:
             Logger.exception('Pictures: Unable to load <%s>' % filename)
@@ -283,6 +310,7 @@ class Root(FloatLayout):
 
 class Editor(App):
     pass
+
 
 Factory.register('Root', cls=Root)
 Factory.register('LoadDialog', cls=LoadDialog)
