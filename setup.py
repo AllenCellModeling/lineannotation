@@ -32,16 +32,16 @@ setup(
                 "distribution of Sarcomere Lengths",
     entry_points={
         'console_scripts': [
-            'line_annot=sarcomereannotation.bin.line_annot:main'
+            'line_annot=lineannotation.bin.line_annot:main'
         ],
     },
     install_requires=requirements,
     license="Allen Institute Software License",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='sarcomereannotation',
-    name='sarcomereannotation',
-    packages=find_packages(include=['sarcomereannotation']),
+    keywords='lineannotation',
+    name='lineannotation',
+    packages=find_packages(include=['lineannotation']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

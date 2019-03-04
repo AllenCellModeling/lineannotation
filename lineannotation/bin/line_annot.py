@@ -12,10 +12,11 @@ the context of the native image coordinates (0,0) is lower left corner.
 import kivy
 from kivy.app import App
 from kivy.factory import Factory
-from sarcomereannotation.LoadDialog import LoadDialog
-from sarcomereannotation.Root import Root
+from lineannotation.LoadDialog import LoadDialog
+from lineannotation.Root import Root
 
 kivy.require('1.0.6')
+
 
 
 class Editor(App):

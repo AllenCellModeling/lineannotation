@@ -1,3 +1,4 @@
+from .ImagePath import IMAGE_FOLDER
 from kivy.core.window import Window
 from kivy.logger import Logger
 from kivy.properties import ObjectProperty
@@ -5,8 +6,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.slider import Slider
-from sarcomereannotation.LoadDialog import LoadDialog
-from sarcomereannotation.Picture import Picture
+from .LoadDialog import LoadDialog
+from .Picture import Picture
 import os
 
 
