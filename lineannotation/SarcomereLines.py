@@ -11,6 +11,7 @@ class SarcomereLines(object):
     the logic of when to clear the lines from the canvas etc.
 
     """
+
     def __init__(self, fname):
         """
         Initialize SarcomereLines with a file name
@@ -27,7 +28,18 @@ class SarcomereLines(object):
         self.d = 5
         self.lw = 3
         self.instructions = None  # container to hold the lines drawing object
-        self.highlight = None     # container to hold the highlight lines object
+        self.highlight = None  # container to hold the highlight lines object
+        self.scale_factor = 1.0
+
+    def set_scale_factor(self, sf):
+        self.scale_factor = sf
+
+    def map_point(self, point):
+        pos = point
+        pos_x = pos[0] / self.scale_factor
+        pos_y = pos[1] / self.scale_factor
+        pos = (pos_x, pos_y)
+        return pos
 
     def end_line(self):
         """
@@ -42,8 +54,9 @@ class SarcomereLines(object):
         :param point: this is a kivy point object, pos contains the
         global coordinates in the image frame
         """
-        self.lines[-1].append(point.pos)
-        print(str(point.pos))
+        spos = self.map_point(point.pos)
+        self.lines[-1].append(spos)
+        print(str(spos))
 
     def undo_last(self):
         if len(self.lines[-1]) == 0 and len(self.lines) > 1:
@@ -61,7 +74,8 @@ class SarcomereLines(object):
 
     def remove_nearest(self, point, canvas):
         if len(self.lines) == 1 and len(self.lines[0]) == 0: return
-        i, r_line = self.select_nearest_line(point)
+        spos = self.map_point(point.pos)
+        i, r_line = self.select_nearest_line(spos)
         self.lines.remove(r_line)
         canvas.remove(self.highlight)
         self.highlight = None
@@ -69,7 +83,8 @@ class SarcomereLines(object):
     def highlight_nearest(self, point, canvas):
         if len(self.lines) == 1 and len(self.lines[0]) == 0:
             return
-        i, r_line = self.select_nearest_line(point)
+        spos = self.map_point(point.pos)
+        i, r_line = self.select_nearest_line(spos)
         self.draw_highlight(r_line, canvas)
 
     def draw_highlight(self, line, canvas):
@@ -81,8 +96,7 @@ class SarcomereLines(object):
             self.highlight.add(Color(1, 1, 0))
             self.highlight.add(
                 Line(points=[c for p in line for c in p],
-                     width=self.lw, dash_length=10,
-                    dash_offset=5)
+                     width=self.lw)
             )
             canvas.add(self.highlight)
 
@@ -94,15 +108,14 @@ class SarcomereLines(object):
             if len(line) > 1:
                 self.instructions.add(Color(0, 1, 0))
                 self.instructions.add(
-                    Line(points=[c for p in line for c in p],
-                         width=self.lw, dash_length=10,
-                         dash_offset=5)
+                    Line(points=[c * self.scale_factor for p in line for c in p],
+                         width=self.lw)
                 )
             self.instructions.add(Color(1, 0, 0))
             for p in line:
                 self.instructions.add(
-                    Ellipse(pos=(p[0] - self.d / 2, p[1] - self.d / 2),
-                        size=(self.d, self.d))
+                    Ellipse(pos=(p[0] * self.scale_factor - self.d / 2, p[1] * self.scale_factor - self.d / 2),
+                            size=(self.d, self.d))
                 )
         canvas.add(self.instructions)
 
@@ -120,4 +133,4 @@ class SarcomereLines(object):
     def dist(self, p1, p2):
         dx = float(p1[0]) - float(p2[0])
         dy = float(p1[1]) - float(p2[1])
-        return math.sqrt(dx*dx + dy*dy)
+        return math.sqrt(dx * dx + dy * dy)
