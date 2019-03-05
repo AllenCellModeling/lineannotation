@@ -23,3 +23,4 @@ PICTURE_VIEW = """
                 size:(self.width+72, self.height+72)
                 pos: (-36,-36)
 """
+
