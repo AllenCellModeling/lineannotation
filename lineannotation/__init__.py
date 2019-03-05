@@ -11,5 +11,3 @@ def get_module_version():
     return __version__
 
 
-from .SarcomereLines import SarcomereLines
-from .Picture import Picture
