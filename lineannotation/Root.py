@@ -1,5 +1,5 @@
-from .ImagePath import IMAGE_FOLDER
 from kivy.core.window import Window
+from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.properties import ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
@@ -64,10 +64,10 @@ class Root(FloatLayout):
         if self.picture is None: return
         self.picture.end_line()
 
-    def clear_line(self):
-        print("r:in clear_line")
+    def undo_last(self):
+        print("r:in undo_last")
         if self.picture is None: return
-        self.picture.clear_line()
+        self.picture.undo_last()
 
     def toggle_modify(self):
         print("r:in toggle_modify")
@@ -82,7 +82,7 @@ class Root(FloatLayout):
         print("modifier=", modifier)
         ktofunc = {
             'e': self.end_line,
-            'z': self.clear_line,
+            'z': self.undo_last,
             'm': self.toggle_modify,
             'r': self.set_remove,
             '=': lambda: print('zoom in'),
@@ -91,3 +91,4 @@ class Root(FloatLayout):
         func = ktofunc.get(modifier, None)
         if func:
             func()
+

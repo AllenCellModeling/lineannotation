@@ -1,33 +1,11 @@
 from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.image import Image
+from .Picture_View import PICTURE_VIEW
 from .SarcomereLines import SarcomereLines
 
 # View
-Builder.load_string("""
-<Picture>:
-    # each time a picture is created, the image can delay the loading
-    # as soon as the image is loaded, ensure that the center is changed
-    # to the center of the screen.
-    size: image.size
-    size_hint: None, None
-    Image:
-        id: image
-        source: root.source
-        keep_ratio: True
-        # create initial image to be 400 pixels width
-        size: 2048, 2048
-
-        # add shadow background
-        canvas.before:
-            Color:
-                rgba: 1,1,1,1
-            BorderImage:
-                source: 'resources/shadow32.png'
-                border: (36,36,36,36)
-                size:(self.width+72, self.height+72)
-                pos: (-36,-36)
-""")
+Builder.load_string(PICTURE_VIEW)
 
 
 # Model
@@ -72,7 +50,7 @@ class Picture(Image):
             self.keep_points.write_file(self.txt_name, self.size)
             self.draw()
 
-    def clear_line(self):
+    def undo_last(self):
         print("p:clear_line")
         self.keep_points.undo_last()
         self.draw()
@@ -84,6 +62,8 @@ class Picture(Image):
     def toggle_modify(self):
         print("p:toggle_modify")
         self._modify = not self._modify
+        self.keep_points.draw_highlight(None, self.canvas)
+        self.draw()
 
     def set_remove(self):
         print("p:set_remove")

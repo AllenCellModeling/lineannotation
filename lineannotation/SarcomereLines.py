@@ -75,14 +75,16 @@ class SarcomereLines(object):
     def draw_highlight(self, line, canvas):
         if self.highlight:
             canvas.remove(self.highlight)
-        self.highlight = InstructionGroup()
-        self.highlight.add(Color(1, 1, 0))
-        self.highlight.add(
-            Line(points=[c for p in line for c in p],
-                 width = self.lw, dash_length=10,
-                 dash_offset=5)
-        )
-        canvas.add(self.highlight)
+            self.highlight = None
+        if line:
+            self.highlight = InstructionGroup()
+            self.highlight.add(Color(1, 1, 0))
+            self.highlight.add(
+                Line(points=[c for p in line for c in p],
+                     width=self.lw, dash_length=10,
+                    dash_offset=5)
+            )
+            canvas.add(self.highlight)
 
     def draw(self, canvas):
         if self.instructions:
