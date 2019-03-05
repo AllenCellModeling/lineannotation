@@ -18,17 +18,14 @@ Root:
                 text: 'Load'
                 on_release: root.show_load()
             Button:
-                text: 'Save'
-                on_release: root.show_save()
-            Button:
-                text: 'Start Line'
-                on_release: root.start_line()
-            Button:
-                text: 'End Line'
+                text: 'End Line (e)'
                 on_release: root.end_line()
             Button:
-                text: 'Clear Line'
-                on_release: root.clear_line()
+                text: 'Undo Last (z)'
+                on_release: root.undo_last()
+            Button:
+                text: 'Edit Lines (m)'
+                on_release: root.toggle_modify()
 
 
 
