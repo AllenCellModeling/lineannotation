@@ -1,6 +1,4 @@
-from lineannotation import SarcomereLines
-
+import pytest
 
 def test_value_change():
-    sl = SarcomereLines()
     assert True
