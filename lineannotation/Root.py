@@ -1,12 +1,11 @@
 from kivy.core.window import Window
-from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.properties import ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
-from kivy.uix.slider import Slider
 from .LoadDialog import LoadDialog
+from math import pow
 from .Picture import Picture
 import os
 
@@ -27,13 +26,27 @@ class Root(FloatLayout):
         super(Root, self).__init__(**kwargs)
         Window.bind(on_keyboard=self._on_keyboard_handler)  # this binds the keyboard input to the member function
         self.__popup = None
+        self.js_x_size = 2048
+        self.js_y_size = 2048
+        self.scale_value = 1
+
+    def js_size(self):
+        sz = (self.js_x_size*self.scale_value, self.js_y_size*self.scale_value)
+        return sz
+
+    def js_scale_size(self, sv):
+        self.scale_value = sv
+        pos = (self.scale_value*self.js_x_size, self.scale_value*self.js_y_size)
+        return pos
 
     def add_picture(self, path):
         filename = path
         try:
             # load the image
             sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})
-            l_picture = Picture(source=filename)
+            sv.do_scroll_x = True
+            sv.do_scroll_y = True
+            l_picture = Picture(source=filename, size=(self.js_size()))
             # add to the main field
             sv.add_widget(l_picture)  # add the picture to the scrollview
             self.add_widget(sv)      # add the scrollview to the Root Canvas
@@ -60,33 +73,45 @@ class Root(FloatLayout):
         self.dismiss_popup()
 
     def end_line(self):
-        print("r:in end_line")
         if self.picture is None: return
         self.picture.end_line()
 
     def undo_last(self):
-        print("r:in undo_last")
         if self.picture is None: return
         self.picture.undo_last()
 
     def toggle_modify(self):
-        print("r:in toggle_modify")
         if self.picture is None: return
         self.picture.toggle_modify()
 
     def set_remove(self):
-        print("r:in set_remove")
         self.picture.set_remove()
 
+    def update_zoom(self):
+        cval = self.ids.zoomer.value
+        fval = pow(2.0, float(cval))
+        if self.picture:
+            self.picture.size = self.js_scale_size(fval)
+            self.picture.set_scale_factor(fval)
+
+    def zoom_up(self):
+        if self.picture:
+            self.ids.zoomer.value += 1
+            self.update_zoom()
+
+    def zoom_down(self):
+        if self.picture:
+            self.ids.zoomer.value -= 1
+            self.update_zoom()
+
     def _on_keyboard_handler(self, key, scancode, codepoint, modifier, *args):
-        print("modifier=", modifier)
         ktofunc = {
             'e': self.end_line,
             'z': self.undo_last,
             'm': self.toggle_modify,
             'r': self.set_remove,
-            '=': lambda: print('zoom in'),
-            '-': lambda: print('zoom out')
+            '=': self.zoom_up,
+            '-': self.zoom_down
         }
         func = ktofunc.get(modifier, None)
         if func:

@@ -1,1 +1,1 @@
-IMAGE_FOLDER = '/Users/jamies/projects/sarcomereannotation/lineannotation/resources'
+IMAGE_FOLDER = '/Users/jamies/Sandbox/Python/sarcomereannotation/lineannotation/resources'

@@ -26,6 +26,8 @@ class Picture(Image):
 
     def __init__(self, **kwargs):
         super(Picture, self).__init__(**kwargs)
+        self.allow_stretch = True
+        self.keep_ratio = True
         self.txt_name = kwargs["source"] + ".annot_txt"
         self.keep_points = SarcomereLines(self.txt_name)
         self.draw()
@@ -71,4 +73,8 @@ class Picture(Image):
             self.keep_points.remove_nearest(self.magic_point, self.canvas)
             self.keep_points.draw(self.canvas)
             self.toggle_modify()
+        self.draw()
+
+    def set_scale_factor(self, sf):
+        self.keep_points.set_scale_factor(sf)
         self.draw()

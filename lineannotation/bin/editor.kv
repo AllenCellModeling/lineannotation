@@ -12,7 +12,16 @@ Root:
         BoxLayout:
             size_hint_y: None
             height: 30
-            #padding: [0, 0, 0, 1054]
+            Slider:
+                id: zoomer
+                pos: 0, 0
+                min: -1
+                max: 4
+                step: 1
+                on_touch_up: root.update_zoom()
+        BoxLayout:
+            size_hint_y: None
+            height: 30
             Button:
                 pos: 0, 0
                 text: 'Load'
