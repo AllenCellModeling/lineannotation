@@ -45,7 +45,7 @@ class Picture(Image):
         """
         print("p:in on_touch_down")
         if self._modify:
-            self.magic_point = touch.pos
+            self.magic_point = touch
             self.keep_points.highlight_nearest(self.magic_point, self.canvas)
         else:
             self.keep_points.add_point(touch)

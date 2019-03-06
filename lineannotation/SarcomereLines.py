@@ -95,7 +95,7 @@ class SarcomereLines(object):
             self.highlight = InstructionGroup()
             self.highlight.add(Color(1, 1, 0))
             self.highlight.add(
-                Line(points=[c for p in line for c in p],
+                Line(points=[c*self.scale_factor for p in line for c in p],
                      width=self.lw)
             )
             canvas.add(self.highlight)

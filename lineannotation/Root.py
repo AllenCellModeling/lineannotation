@@ -7,6 +7,7 @@ from kivy.uix.scrollview import ScrollView
 from .LoadDialog import LoadDialog
 from math import pow
 from .Picture import Picture
+from .XYScroll import XYScroll
 import os
 
 
@@ -43,7 +44,7 @@ class Root(FloatLayout):
         filename = path
         try:
             # load the image
-            sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})
+            sv = XYScroll(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95}, bar_width='10dp')
             sv.do_scroll_x = True
             sv.do_scroll_y = True
             l_picture = Picture(source=filename, size=(self.js_size()))
