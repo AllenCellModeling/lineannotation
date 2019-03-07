@@ -8,7 +8,6 @@ from .LoadDialog import LoadDialog
 from math import pow
 import os
 from .Picture import Picture
-import pathlib
 
 
 class Root(FloatLayout):
