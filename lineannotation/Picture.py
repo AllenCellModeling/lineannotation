@@ -1,14 +1,8 @@
-from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.image import Image
-from .Picture_View import PICTURE_VIEW
 from .SarcomereLines import SarcomereLines
 
-# View
-#Builder.load_string(PICTURE_VIEW)
 
-
-# Model
 class Picture(Image):
     """
     Picture is the class that will show the image with a white border and a
