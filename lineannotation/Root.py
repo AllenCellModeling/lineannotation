@@ -4,9 +4,10 @@ from kivy.properties import ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
-from .LoadDialog import LoadDialog
 from math import pow
 import os
+
+from .LoadDialog import LoadDialog
 from .Picture import Picture
 
 
@@ -31,15 +32,27 @@ class Root(FloatLayout):
         self.scale_value = 1
 
     def js_size(self):
+        """
+        the scaled image size
+        """
         sz = (self.js_x_size*self.scale_value, self.js_y_size*self.scale_value)
         return sz
 
     def js_scale_size(self, sv):
+        """
+        set the scale value and return the size given that scaling factor
+        :param sv: scale value
+        :return: scaled size
+        """
         self.scale_value = sv
         pos = (self.scale_value*self.js_x_size, self.scale_value*self.js_y_size)
         return pos
 
     def add_picture(self, path):
+        """
+        load the Image inside a scrollview and attach it to the root object ( this class)
+        :param path: image path
+        """
         filename = path
         try:
             # load the image
@@ -105,6 +118,10 @@ class Root(FloatLayout):
             self.update_zoom()
 
     def _on_keyboard_handler(self, key, scancode, codepoint, modifier, *args):
+        """
+        this is a hook which allows keybindings to be added. The keys are mapped to the member function.
+        :param modifier: the key that was pressed (all other modifiers / other arguments are ignored)
+        """
         ktofunc = {
             'e': self.end_line,
             'z': self.undo_last,
