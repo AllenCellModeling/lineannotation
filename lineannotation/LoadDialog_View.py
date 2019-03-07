@@ -7,7 +7,7 @@ LOADDIALOG_VIEW = """
         orientation: "vertical"
         FileChooserListView:
             id: filechooser
-            path: '{}'
+            path: root.default_path
 
         BoxLayout:
             size_hint_y: None
