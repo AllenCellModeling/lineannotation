@@ -6,8 +6,9 @@ from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from .LoadDialog import LoadDialog
 from math import pow
-from .Picture import Picture
 import os
+from .Picture import Picture
+import pathlib
 
 
 class Root(FloatLayout):
