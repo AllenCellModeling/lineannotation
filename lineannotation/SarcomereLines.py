@@ -25,11 +25,11 @@ class SarcomereLines(object):
         except FileNotFoundError:
             self.lines = [[]]
 
-        self.d = 5
-        self.lw = 3
+        self.d = 5  # diameter of any point drawn
+        self.lw = 3 # the width of drawn lines
         self.instructions = None  # container to hold the lines drawing object
         self.highlight = None  # container to hold the highlight lines object
-        self.scale_factor = 1.0
+        self.scale_factor = 1.0  # how many fold the image is zoomed from native.
 
     def set_scale_factor(self, sf):
         """
@@ -66,7 +66,6 @@ class SarcomereLines(object):
         """
         spos = self.map_point(point.pos)
         self.lines[-1].append(spos)
-        print(str(spos))
 
     def undo_last(self):
         """

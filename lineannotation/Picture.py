@@ -45,7 +45,6 @@ class Picture(Image):
         responds to mouse clicks
         :param touch: this is the mouse down point, touch.pos are the image coordinates.
         """
-        print("p:in on_touch_down")
         if self._modify:
             self.magic_point = touch.pos
             self.keep_points.highlight_nearest(self.magic_point, self.canvas)
@@ -58,7 +57,6 @@ class Picture(Image):
         """
         undo_last clears the last action be it ending the line or a point added to the last line.
         """
-        print("p:clear_line")
         self.keep_points.undo_last()
         self.draw()
 
@@ -66,7 +64,6 @@ class Picture(Image):
         """
         end the line by inserting an empty line at the end of the list.
         """
-        print("p:end_line")
         self.keep_points.end_line()
 
     def toggle_modify(self):
@@ -75,7 +72,6 @@ class Picture(Image):
         it will remove the line from the annotation list. If 'm' or the modify button are struck
         then it cancels out of the mode.
         """
-        print("p:toggle_modify")
         self._modify = not self._modify
         self.keep_points.draw_highlight(None, self.canvas)
         self.draw()
@@ -84,7 +80,6 @@ class Picture(Image):
         """
         Removes the line nearest the point selected, exits edit mode, and redraws the canvas.
         """
-        print("p:set_remove")
         if self._modify:
             self.keep_points.remove_nearest(self.magic_point, self.canvas)
             self.keep_points.draw(self.canvas)
