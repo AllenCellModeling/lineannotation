@@ -5,7 +5,7 @@ from .Picture_View import PICTURE_VIEW
 from .SarcomereLines import SarcomereLines
 
 # View
-Builder.load_string(PICTURE_VIEW)
+#Builder.load_string(PICTURE_VIEW)
 
 
 # Model

@@ -47,7 +47,7 @@ class Root(FloatLayout):
             sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})
             sv.do_scroll_x = True
             sv.do_scroll_y = True
-            l_picture = Picture(source=filename, size=(self.js_size()))
+            l_picture = Picture(source=filename, size=(self.js_size()), size_hint=(None, None))
             # add to the main field
             sv.add_widget(l_picture)  # add the picture to the scrollview
             self.add_widget(sv)      # add the scrollview to the Root Canvas
