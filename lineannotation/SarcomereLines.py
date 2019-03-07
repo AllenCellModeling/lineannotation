@@ -26,7 +26,7 @@ class SarcomereLines(object):
             self.lines = [[]]
 
         self.d = 5
-        self.lw = 3
+        self.lw = 2
         self.instructions = None  # container to hold the lines drawing object
         self.highlight = None  # container to hold the highlight lines object
         self.scale_factor = 1.0
