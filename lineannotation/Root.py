@@ -94,6 +94,7 @@ class Root(FloatLayout):
         if self.picture:
             self.picture.size = self.js_scale_size(fval)
             self.picture.set_scale_factor(fval)
+        return True
 
     def zoom_up(self):
         if self.picture:
@@ -117,4 +118,5 @@ class Root(FloatLayout):
         func = ktofunc.get(modifier, None)
         if func:
             func()
+        return True
 

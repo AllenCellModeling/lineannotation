@@ -56,7 +56,7 @@ class SarcomereLines(object):
         """
         spos = self.map_point(point.pos)
         self.lines[-1].append(spos)
-        print(str(spos))
+        # print(str(spos))
 
     def undo_last(self):
         if len(self.lines[-1]) == 0 and len(self.lines) > 1:
@@ -77,7 +77,7 @@ class SarcomereLines(object):
         spos = self.map_point(point.pos)
         i, r_line = self.select_nearest_line(spos)
         self.lines.remove(r_line)
-        canvas.remove(self.highlight)
+        canvas.remove(self.highlight) if canvas else None
         self.highlight = None
 
     def highlight_nearest(self, point, canvas):

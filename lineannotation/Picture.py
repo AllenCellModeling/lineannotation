@@ -51,6 +51,7 @@ class Picture(Image):
             self.keep_points.add_point(touch)
             self.keep_points.write_file(self.txt_name, self.size)
             self.draw()
+        return True
 
     def undo_last(self):
         print("p:clear_line")
