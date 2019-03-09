@@ -104,5 +104,5 @@ TEST_FILE = "testme.annot_txt"
 #     assert check_line_eq(sl.lines[2], [(100, 400), (100, 200)])
 #     assert len(sl.lines[3]) == 0
 
-def test_true:
+def test_true():
     assert True
