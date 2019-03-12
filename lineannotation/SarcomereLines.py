@@ -110,7 +110,6 @@ class SarcomereLines(object):
         :return: the (index, line) of the selected line in the list of lines
         """
         p = self.map_point(point)
-        print("mapped Pos: ", p)
         line_idx = 0
         p_dist = 100000.0
         for idx, line in enumerate(self.lines):

@@ -69,7 +69,6 @@ class Picture(Image):
         responds to mouse clicks
         :param touch: this is the mouse down point, touch.pos are the image coordinates.
         """
-        print("p:in on_touch_down")
         if self._modify:
             self.magic_point = deepcopy(touch)
             self.highlight_nearest(self.magic_point)
