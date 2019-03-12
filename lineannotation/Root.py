@@ -3,12 +3,12 @@ from kivy.logger import Logger
 from kivy.properties import ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
-from kivy.uix.scrollview import ScrollView
 from math import pow
 import os
 
 from .LoadDialog import LoadDialog
 from .Picture import Picture
+from .XYScroll import XYScroll
 
 
 class Root(FloatLayout):
@@ -30,6 +30,10 @@ class Root(FloatLayout):
         self.js_x_size = 2048
         self.js_y_size = 2048
         self.scale_value = 1
+        if os.environ.get('JS_FILEPATH', None):
+            fname = os.environ.get('JS_FILEPATH')
+            fname = os.path.expanduser(fname)
+            self.add_picture(fname)
 
     def js_size(self):
         """
@@ -55,8 +59,10 @@ class Root(FloatLayout):
         """
         filename = path
         try:
+            if self.picture is not None:
+                self.remove_widget(self.picture.parent)
             # load the image
-            sv = ScrollView(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95})
+            sv = XYScroll(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95}, bar_width='10dp')
             sv.do_scroll_x = True
             sv.do_scroll_y = True
             l_picture = Picture(source=filename, size=(self.js_size()), size_hint=(None, None))
@@ -76,7 +82,7 @@ class Root(FloatLayout):
         self._popup.dismiss()
 
     def show_load(self):
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        content = LoadDialog(jspath=os.environ.get('JS_DEFAULT_FOLDER'), load=self.load, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
@@ -106,6 +112,7 @@ class Root(FloatLayout):
         if self.picture:
             self.picture.size = self.js_scale_size(fval)
             self.picture.set_scale_factor(fval)
+        return True
 
     def zoom_up(self):
         if self.picture:
@@ -133,4 +140,4 @@ class Root(FloatLayout):
         func = ktofunc.get(modifier, None)
         if func:
             func()
-
+        return True

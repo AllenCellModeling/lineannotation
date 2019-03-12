@@ -3,8 +3,6 @@ SarcomereAnnotation
 ===================
 
 
-.. image:: https://img.shields.io/pypi/v/sarcomereannotation.svg
-        :target: https://pypi.python.org/pypi/sarcomereannotation
 
 .. image:: https://img.shields.io/travis/AllenCellModeling/sarcomereannotation.svg
         :target: https://travis-ci.org/AllenCellModeling/sarcomereannotation
@@ -14,18 +12,36 @@ SarcomereAnnotation
         :alt: Documentation Status
 
 
-A tool for annotating myofibrile bundles to then use the path and background image to get the distribution of Sarcomere Lengths
+A tool for annotating images with lines.
 
 
 * Free software: Allen Institute Software License
 
 * Documentation: https://sarcomereannotation.readthedocs.io.
 
+Installation
+------------
+
+`> git clone :repo_url:`
+
+`> pip install -e .`
+
+Usage
+-----
+
+`> line_annot`
+
+or
+
+`> line_annot -ip :path/to/image:`
 
 Features
 --------
 
-* TODO
+* load an image
+* draw lines on image
+* edit lines that have been added
+* TODO: generate docs
 
 Credits
 -------

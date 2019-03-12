@@ -44,7 +44,7 @@ Root:
         orientation: "vertical"
         FileChooserListView:
             id: filechooser
-            path: '~'
+            path: root.image_folder
 
         BoxLayout:
             size_hint_y: None
@@ -56,7 +56,3 @@ Root:
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
-
-
-
-
