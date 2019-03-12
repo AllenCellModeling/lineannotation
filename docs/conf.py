@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'SarcomereAnnotation'
+project = u'LineAnnotation'
 copyright = u"2019, Jamie Sherman"
 author = u"Jamie Sherman"
 
@@ -101,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'sarcomereannotationdoc'
+htmlhelp_basename = 'lineannotationdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------
