@@ -25,20 +25,17 @@ kivy.require('1.0.6')
 class Editor(App):
     pass
 
-    # def run(self, ip):
-    #     super.run()
-    def take_image_path(self, ip):
-        self.root.add_picture(ip)
 
 
-Factory.register('Root', cls=Root)
-Factory.register('LoadDialog', cls=LoadDialog)
+def main():
 
-parser = ArgumentParser()
-parser.add_argument("-ip", "--image_path", help="path to image to open")
-parser.add_argument("-df", "--default_folder", help="folder to use for folder loading", default="~/img_res/")
+    Factory.register('Root', cls=Root)
+    Factory.register('LoadDialog', cls=LoadDialog)
 
-if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument("-ip", "--image_path", help="path to image to open")
+    parser.add_argument("-df", "--default_folder", help="folder to use for folder loading", default="~/img_res/")
+
     js_args = parser.parse_args()
     if js_args.image_path:
         os.environ["JS_FILEPATH"] = js_args.image_path

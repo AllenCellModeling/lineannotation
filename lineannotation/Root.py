@@ -59,6 +59,8 @@ class Root(FloatLayout):
         """
         filename = path
         try:
+            if self.picture is not None:
+                self.remove_widget(self.picture.parent)
             # load the image
             sv = XYScroll(size_hint=(0.9, 0.9), pos_hint={'top': 0.975, 'right': 0.95}, bar_width='10dp')
             sv.do_scroll_x = True
