@@ -2,6 +2,7 @@
 
 language: python
 python:
+  - "3.6"
   - "3.7-dev"
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
@@ -22,5 +23,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: AllenCellModeling/sarcomereannotation
+    repo: AllenCellModeling/lineannotation
     python: 3.7

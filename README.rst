@@ -1,14 +1,14 @@
 ===================
-SarcomereAnnotation
+LineAnnotation
 ===================
 
 
 
-.. image:: https://img.shields.io/travis/AllenCellModeling/sarcomereannotation.svg
-        :target: https://travis-ci.org/AllenCellModeling/sarcomereannotation
+.. image:: https://img.shields.io/travis/AllenCellModeling/lineannotation.svg
+        :target: https://travis-ci.org/AllenCellModeling/lineannotation
 
 .. image:: https://readthedocs.org/projects/sarcomereannotation/badge/?version=latest
-        :target: https://sarcomereannotation.readthedocs.io/en/latest/?badge=latest
+        :target: https://lineannotation.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 
@@ -17,7 +17,7 @@ A tool for annotating images with lines.
 
 * Free software: Allen Institute Software License
 
-* Documentation: https://sarcomereannotation.readthedocs.io.
+* Documentation: https://lineannotation.readthedocs.io.
 
 Installation
 ------------
