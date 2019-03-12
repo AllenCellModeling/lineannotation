@@ -1,5 +1,4 @@
 import json
-#from kivy.graphics import Color, Ellipse, InstructionGroup, Line
 import math
 
 
