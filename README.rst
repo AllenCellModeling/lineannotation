@@ -7,10 +7,6 @@ LineAnnotation
 .. image:: https://img.shields.io/travis/AllenCellModeling/lineannotation.svg
         :target: https://travis-ci.org/AllenCellModeling/lineannotation
 
-.. image:: https://readthedocs.org/projects/sarcomereannotation/badge/?version=latest
-        :target: https://lineannotation.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
 
 A tool for annotating images with lines.
 
