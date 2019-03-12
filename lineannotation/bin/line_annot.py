@@ -9,8 +9,7 @@ the context of the native image coordinates (0,0) is lower left corner.
 
 '''
 import os
-os.environ["KIVY_NO_ARGS"] = "1"
-
+os.environ["KIVY_NO_ARGS"] = "1"  # has to be here or kivy will parse the args rather than argparse
 from argparse import ArgumentParser
 import kivy
 from kivy.app import App
@@ -18,20 +17,12 @@ from kivy.factory import Factory
 from lineannotation.LoadDialog import LoadDialog
 from lineannotation.Root import Root
 
-kivy.require('1.0.6')
-
-
 
 class Editor(App):
     pass
 
 
-
 def main():
-
-    Factory.register('Root', cls=Root)
-    Factory.register('LoadDialog', cls=LoadDialog)
-
     parser = ArgumentParser()
     parser.add_argument("-ip", "--image_path", help="path to image to open")
     parser.add_argument("-df", "--default_folder", help="folder to use for folder loading", default="~/img_res/")
@@ -42,4 +33,12 @@ def main():
 
     os.environ["JS_DEFAULT_FOLDER"] = js_args.default_folder
 
+    kivy.require('1.0.6')
+
+    Factory.register('Root', cls=Root)
+    Factory.register('LoadDialog', cls=LoadDialog)
     Editor().run()
+
+
+if __name__ == '__main__':
+    main()
