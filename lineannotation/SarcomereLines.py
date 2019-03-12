@@ -1,5 +1,5 @@
 import json
-from kivy.graphics import Color, Ellipse, InstructionGroup, Line
+#from kivy.graphics import Color, Ellipse, InstructionGroup, Line
 import math
 
 
@@ -22,6 +22,7 @@ class SarcomereLines(object):
                 fp.readline()  # Discard the image size for now
                 self.lines = json.load(fp=fp)
             fp.closed
+            self.end_line()  # append a newline onto the list of lines so as not to extend defined lines
         except FileNotFoundError:
             self.lines = [[]]
 
@@ -45,7 +46,7 @@ class SarcomereLines(object):
         :param point: point.pos is are the coordinates in the scaled image
         :return: the coordinates in the native resolution
         """
-        pos = point
+        pos = point.pos
         pos_x = pos[0] / self.scale_factor
         pos_y = pos[1] / self.scale_factor
         pos = (pos_x, pos_y)
@@ -64,7 +65,7 @@ class SarcomereLines(object):
         :param point: this is a kivy point object, pos contains the
         global coordinates in the image frame
         """
-        spos = self.map_point(point.pos)
+        spos = self.map_point(point)
         self.lines[-1].append(spos)
 
     def undo_last(self):
@@ -97,75 +98,19 @@ class SarcomereLines(object):
         :param canvas: the drawing canvas that displays the image
         """
         if len(self.lines) == 1 and len(self.lines[0]) == 0: return
-        spos = self.map_point(point.pos)
-        i, r_line = self.select_nearest_line(spos)
+        i, r_line = self.select_nearest_line(point)
         self.lines.remove(r_line)
-        canvas.remove(self.highlight) if canvas else None
-        self.highlight = None
+        #canvas.remove(self.highlight) if canvas else None
+        #self.highlight = None
 
-    def highlight_nearest(self, point, canvas):
-        canvas.remove(self.highlight)
-        self.highlight = None
-
-    def highlight_nearest(self, point, canvas):
-        """
-        highlight the line nearest the point clicked
-        :param point: the point selected
-        :param canvas: where the image and lines are displayed
-        """
-        if len(self.lines) == 1 and len(self.lines[0]) == 0:
-            return
-        spos = self.map_point(point.pos)
-        i, r_line = self.select_nearest_line(spos)
-        self.draw_highlight(r_line, canvas)
-
-    def draw_highlight(self, line, canvas):
-        """
-        draw the selected line in yellow to highlight it and allow the user to decide if they want to remove it.
-        :param line: the line that was selected
-        :param canvas: the drawing canvas
-        """
-        if self.highlight:
-            canvas.remove(self.highlight)
-            self.highlight = None
-        if line:
-            self.highlight = InstructionGroup()
-            self.highlight.add(Color(1, 1, 0))
-            self.highlight.add(
-                Line(points=[c*self.scale_factor for p in line for c in p],
-                     width=self.lw)
-            )
-            canvas.add(self.highlight)
-
-    def draw(self, canvas):
-        """
-        redraw all the lines and points
-        :param canvas: the image canvas to draw on
-        """
-        if self.instructions:
-            canvas.remove(self.instructions)
-        self.instructions = InstructionGroup()
-        for line in self.lines:
-            if len(line) > 1:
-                self.instructions.add(Color(0, 1, 0))
-                self.instructions.add(
-                    Line(points=[c * self.scale_factor for p in line for c in p],
-                         width=self.lw)
-                )
-            self.instructions.add(Color(1, 0, 0))
-            for p in line:
-                self.instructions.add(
-                    Ellipse(pos=(p[0] * self.scale_factor - self.d / 2, p[1] * self.scale_factor - self.d / 2),
-                            size=(self.d, self.d))
-                )
-        canvas.add(self.instructions)
-
-    def select_nearest_line(self, p):
+    def select_nearest_line(self, point):
         """
         Select the line nearest the point submitted
-        :param p: the selected point in native coordinates
+        :param point: the selected point NOT in native coordinates
         :return: the (index, line) of the selected line in the list of lines
         """
+        p = self.map_point(point)
+        print("mapped Pos: ", p)
         line_idx = 0
         p_dist = 100000.0
         for idx, line in enumerate(self.lines):

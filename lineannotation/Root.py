@@ -30,6 +30,11 @@ class Root(FloatLayout):
         self.js_x_size = 2048
         self.js_y_size = 2048
         self.scale_value = 1
+        if os.environ.get('JS_FILEPATH', None):
+            fname = os.environ.get('JS_FILEPATH')
+            fname = os.path.expanduser(fname)
+            self.add_picture(fname)
+        self.image_folder = os.environ.get('JS_DEFAULT_FOLDER')
 
     def js_size(self):
         """
@@ -76,7 +81,7 @@ class Root(FloatLayout):
         self._popup.dismiss()
 
     def show_load(self):
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        content = LoadDialog(jspath=os.environ.get('JS_DEFAULT_FOLDER'), load=self.load, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()

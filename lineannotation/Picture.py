@@ -1,3 +1,5 @@
+from copy import deepcopy
+from kivy.graphics import Color, Ellipse, InstructionGroup, Line
 from kivy.properties import StringProperty
 from kivy.uix.image import Image
 
@@ -29,15 +31,37 @@ class Picture(Image):
         self.keep_ratio = True
         self.txt_name = kwargs["source"] + ".annot_txt"
         self.keep_points = SarcomereLines(self.txt_name)
-        self.draw()
         self._modify = False  # this toggles the edit state
         self.magic_point = None
+        self.instructions = None
+        self.highlight = None
+        self.d = 5  # diameter of any point drawn
+        self.lw = 2  # the width of drawn lines
+        self.draw()
 
     def draw(self):
         """
-        Draw the annotation lines on the image (canvas)
-        """
-        self.keep_points.draw(self.canvas)
+           redraw all the lines and points
+           :param canvas: the image canvas to draw on
+           """
+        if self.instructions:
+            self.canvas.remove(self.instructions)
+        self.instructions = InstructionGroup()
+        for line in self.keep_points.lines:
+            if len(line) > 1:
+                self.instructions.add(Color(0, 1, 0))
+                self.instructions.add(
+                    Line(points=[c * self.keep_points.scale_factor for p in line for c in p],
+                         width=self.lw)
+                )
+            self.instructions.add(Color(1, 0, 0))
+            for p in line:
+                self.instructions.add(
+                    Ellipse(pos=(p[0] * self.keep_points.scale_factor - self.d / 2, p[1] *
+                                 self.keep_points.scale_factor - self.d / 2),
+                            size=(self.d, self.d))
+                )
+        self.canvas.add(self.instructions)
 
     def on_touch_down(self, touch):
         """
@@ -47,13 +71,43 @@ class Picture(Image):
         """
         print("p:in on_touch_down")
         if self._modify:
-            self.magic_point = touch
-            self.keep_points.highlight_nearest(self.magic_point, self.canvas)
+            self.magic_point = deepcopy(touch)
+            self.highlight_nearest(self.magic_point)
         else:
             self.keep_points.add_point(touch)
-            self.keep_points.write_file(self.txt_name, self.size)
             self.draw()
+            self.write()
         return True
+
+    def write(self):
+        self.keep_points.write_file(self.txt_name, self.size)
+
+    def highlight_nearest(self, point):
+        """
+        highlight the line nearest the point clicked
+        :param point: the point selected
+        """
+        if len(self.keep_points.lines) == 1 and len(self.keep_points.lines[0]) == 0:
+            return
+        i, r_line = self.keep_points.select_nearest_line(point)
+        self.draw_highlight(r_line)
+
+    def draw_highlight(self, line):
+        """
+        draw the selected line in yellow to highlight it and allow the user to decide if they want to remove it.
+        :param line: the line that was selected
+        """
+        if self.highlight:
+            self.canvas.remove(self.highlight)
+            self.highlight = None
+        if line:
+            self.highlight = InstructionGroup()
+            self.highlight.add(Color(1, 1, 0))
+            self.highlight.add(
+                Line(points=[c * self.keep_points.scale_factor for p in line for c in p],
+                     width=self.lw)
+            )
+            self.canvas.add(self.highlight)
 
     def undo_last(self):
         """
@@ -61,12 +115,14 @@ class Picture(Image):
         """
         self.keep_points.undo_last()
         self.draw()
+        self.write()
 
     def end_line(self):
         """
         end the line by inserting an empty line at the end of the list.
         """
         self.keep_points.end_line()
+        self.write()
 
     def toggle_modify(self):
         """
@@ -75,7 +131,7 @@ class Picture(Image):
         then it cancels out of the mode.
         """
         self._modify = not self._modify
-        self.keep_points.draw_highlight(None, self.canvas)
+        self.draw_highlight(None)
         self.draw()
 
     def set_remove(self):
@@ -84,9 +140,11 @@ class Picture(Image):
         """
         if self._modify:
             self.keep_points.remove_nearest(self.magic_point, self.canvas)
-            self.keep_points.draw(self.canvas)
+            self.canvas.remove(self.highlight)
+            self.highlight = None
             self.toggle_modify()
         self.draw()
+        self.write()
 
     def set_scale_factor(self, sf):
         """
