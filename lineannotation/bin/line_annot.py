@@ -25,7 +25,7 @@ class Editor(App):
 def main():
     parser = ArgumentParser()
     parser.add_argument("-ip", "--image_path", help="path to image to open")
-    parser.add_argument("-df", "--default_folder", help="folder to use for folder loading", default="~/img_res/")
+    parser.add_argument("-df", "--default_folder", help="folder to use for folder loading", default="~/")
 
     js_args = parser.parse_args()
     if js_args.image_path:
