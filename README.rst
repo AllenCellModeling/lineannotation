@@ -3,8 +3,6 @@ SarcomereAnnotation
 ===================
 
 
-#.. image:: https://img.shields.io/pypi/v/sarcomereannotation.svg
-#        :target: https://pypi.python.org/pypi/sarcomereannotation
 
 .. image:: https://img.shields.io/travis/AllenCellModeling/sarcomereannotation.svg
         :target: https://travis-ci.org/AllenCellModeling/sarcomereannotation
