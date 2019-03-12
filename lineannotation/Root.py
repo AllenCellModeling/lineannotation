@@ -34,7 +34,6 @@ class Root(FloatLayout):
             fname = os.environ.get('JS_FILEPATH')
             fname = os.path.expanduser(fname)
             self.add_picture(fname)
-        self.image_folder = os.environ.get('JS_DEFAULT_FOLDER')
 
     def js_size(self):
         """
