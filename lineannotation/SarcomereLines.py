@@ -18,15 +18,15 @@ class SarcomereLines(object):
         """
         try:
             with open(fname, 'r') as fp:
-                fp.readline()  # Discard the image size for now
-                self.lines = json.load(fp=fp)
+                read_in = json.load(fp)
+                self.lines = read_in["lines"]  # don't do anything with the image size
             fp.closed
             self.end_line()  # append a newline onto the list of lines so as not to extend defined lines
         except FileNotFoundError:
             self.lines = [[]]
 
         self.d = 5  # diameter of any point drawn
-        self.lw = 2 # the width of drawn lines
+        self.lw = 2  # the width of drawn lines
         self.instructions = None  # container to hold the lines drawing object
         self.highlight = None  # container to hold the highlight lines object
         self.scale_factor = 1.0  # how many fold the image is zoomed from native.
@@ -85,9 +85,8 @@ class SarcomereLines(object):
         :param img_size: the (x,y) size of the local coordinate system used.
         """
         with open(fname, "w") as fp:
-            json.dump(img_size, fp)
-            fp.write("\n")
-            json.dump(self.lines, fp)
+            json.dump({"image_size": img_size, "lines": self.lines}, fp)
+
         fp.closed
 
     def remove_nearest(self, point, canvas):
